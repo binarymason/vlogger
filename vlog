@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# accept unlimited number of emotion arguments and change to comma delimited string.
+emotion=$(echo "$*" | tr ' ' ',')
+
+if [ -z "$emotion" ]; then
+  echo "Usage: vlog <emotion> [emotion]"
+  exit 1
+fi
+
+epoch=$(date +"%s")
+ts=$(date +"%Y%m%d" -d "@$epoch")
+outdir=${HOME}/vlog/${ts}
+clocktime=$(date +"%H%M" -d "@$epoch")
+out="${clocktime}_${epoch}"
+mpg_file="$outdir/$out.mpg"
+meta_file="$outdir/$out.info"
+
+get_weather() {
+  curl -q wttr.in?format=3
+}
+
+get_duration() {
+  ffprobe -i "$mpg_file" -show_format -v quiet | sed -n 's/duration=//p'
+}
+
+
+dump_meta() {
+  {
+    echo "---"
+    echo "duration: $duration"
+    echo "emotion: $emotion"
+    echo "timestamp: $epoch"
+    echo "weather: '$weather'"
+    echo "---"
+  } >> "$meta_file"
+}
+
+
+mkdir -p "$outdir"
+ffmpeg -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 -t 30 "$mpg_file"
+
+
+ffplay -autoexit "$mpg_file" &
+
+weather=$(get_weather)
+duration=$(get_duration)
+wait
+echo "+ processing ..."
+dump_meta
+
+echo "video saved to: $mpg_file"
+echo "meta saved to: $meta_file"
+cat "$meta_file"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+sudo apt install ffmpeg
+sudo ln -sf "${PWD}/vlog" /usr/local/bin/vlog
