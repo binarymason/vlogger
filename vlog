@@ -8,6 +8,8 @@ out="${clocktime}_${epoch}"
 mpg_file="$outdir/$out.mpg"
 meta_file="$outdir/$out.info"
 
+echo "############### recording: $ts @$clocktime"
+
 get_weather() {
   curl -q wttr.in?format=3
 }
