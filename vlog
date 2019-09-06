@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-# accept unlimited number of emotion arguments and change to comma delimited string.
-emotion=$(echo "$*" | tr ' ' ',')
-
-if [ -z "$emotion" ]; then
-  echo "Usage: vlog <emotion> [emotion]"
-  exit 1
-fi
-
 epoch=$(date +"%s")
 ts=$(date +"%Y%m%d" -d "@$epoch")
 outdir=${HOME}/vlog/${ts}
@@ -29,7 +21,8 @@ dump_meta() {
   {
     echo "---"
     echo "duration: $duration"
-    echo "emotion: $emotion"
+
+    [[ ! -z "$emotion" ]] && echo "emotion: $emotion"
     echo "timestamp: $epoch"
     echo "weather: '$weather'"
     echo "---"
@@ -46,6 +39,9 @@ ffplay -autoexit "$mpg_file" &
 weather=$(get_weather)
 duration=$(get_duration)
 wait
+echo -n "Add space delimited emotions then Press ENTER (leave blank to skip): "
+read -r emotion
+emotion=$(echo "$emotion" | tr ' ' ',')
 echo "+ processing ..."
 dump_meta
 
