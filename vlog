@@ -31,7 +31,7 @@ dump_meta() {
 
 
 mkdir -p "$outdir"
-ffmpeg -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 -t 30 "$mpg_file"
+ffmpeg -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 "$mpg_file"
 
 
 ffplay -autoexit "$mpg_file" &
