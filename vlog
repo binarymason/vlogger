@@ -25,7 +25,7 @@ get_duration() {
 
 
 get_transcript() {
-  ffmpeg -loglevel quiet -i "$mpg_file" -acodec pcm_s16le -ac 1 -ar 16000 "$audio_file" -y
+  ffmpeg -loglevel error -i "$mpg_file" -acodec pcm_s16le -ac 1 -ar 16000 "$audio_file" -y
   deepspeech --model models/output_graph.pbmm --alphabet models/alphabet.txt --lm models/lm.binary --trie models/trie --audio "$audio_file" 2>/dev/null
   rm "$audio_file"
 }
@@ -34,12 +34,18 @@ get_transcript() {
 record_video() {
   info "recording: $ts @$clocktime [press q to stop]"
   mkdir -p "$outdir"
-  ffmpeg -loglevel quiet -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 -r 60 "$mpg_file"
+
+  # arguments
+  # -f input (audio or video)
+  # -i input device
+  # -r frame rate
+  # -q:v video quality. (reasonable range 2-5) lower the number, the higher the quality
+  ffmpeg -loglevel error -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 -r 60 -q:v 2 "$mpg_file"
 }
 
 playback() {
   info "starting playback [press q to stop]"
-  ffplay -loglevel quiet -autoexit "$mpg_file"
+  ffplay -loglevel error -autoexit "$mpg_file"
 }
 
 process() {
