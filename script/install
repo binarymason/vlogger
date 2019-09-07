@@ -1,4 +1,18 @@
 #!/usr/bin/env bash
 
-sudo apt install ffmpeg
+set -e
+
+type ffmpeg &>/dev/null || sudo apt install ffmpeg
+type deepspeech &>/dev/null || pip3 install deepspeech --user
+
+if [ ! -d models ]; then
+  echo "downloading deepspeech models..."
+  models=deepspeech-0.5.1-models
+  curl -LO https://github.com/mozilla/DeepSpeech/releases/download/v0.5.1/${models}.tar.gz
+  tar xvf ${models}.tar.gz
+  mv "$models" models
+fi
+
 sudo ln -sf "${PWD}/vlog" /usr/local/bin/vlog
+
+echo "requirements satisified"
