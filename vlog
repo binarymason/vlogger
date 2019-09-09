@@ -4,12 +4,16 @@ set -e
 
 epoch=$(date +"%s")
 ts=$(date +"%Y%m%d" -d "@$epoch")
-outdir=${HOME}/vlog/${ts}
+vlogdir=${HOME}/vlog
+outdir=${vlogdir}/${ts}
 clocktime=$(date +"%H%M" -d "@$epoch")
+humantime=$(date +"%c" -d "@$epoch")
 out="${clocktime}_${epoch}"
 mpg_file="$outdir/$out.mpeg"
 meta_file="$outdir/$out.md"
 audio_file=out.wav
+source_code_root=${HOME}/code/vlogger
+deepspeech_dir=${source_code_root}/models
 
 info() {
   echo "+ $*"
@@ -26,13 +30,19 @@ get_duration() {
 
 get_transcript() {
   ffmpeg -loglevel error -i "$mpg_file" -acodec pcm_s16le -ac 1 -ar 16000 "$audio_file" -y
-  deepspeech --model models/output_graph.pbmm --alphabet models/alphabet.txt --lm models/lm.binary --trie models/trie --audio "$audio_file" 2>/dev/null
+  deepspeech --model "$deepspeech_dir/output_graph.pbmm" --alphabet "$deepspeech_dir/alphabet.txt" --lm "$deepspeech_dir/lm.binary" --trie "$deepspeech_dir/trie" --audio "$audio_file" 2>/dev/null
   rm "$audio_file"
+}
+
+get_video_count() {
+  n=$(find "$vlogdir" -type f -name "*.mp*g" | wc -l)
+  ((n++))
+  echo "$n"
 }
 
 
 record_video() {
-  info "recording: $ts @$clocktime [press q to stop]"
+  info "recording: #$video_count $humantime [press q to stop]"
   mkdir -p "$outdir"
 
   # arguments
@@ -66,7 +76,9 @@ process() {
 
     [[ ! -z "$emotion" ]] && echo "emotion: $emotion"
     echo "timestamp: $epoch"
+    echo "video_count: $video_count"
     echo "weather: '$weather'"
+    echo
     echo "---"
     echo "$transcript"
     echo
@@ -77,6 +89,7 @@ process() {
   cat "$meta_file"
 }
 
+video_count=$(get_video_count)
 record_video
 playback & # fork so processing happens in background during playback
 process
