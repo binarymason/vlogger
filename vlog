@@ -45,13 +45,20 @@ record_video() {
   info "recording: #$video_count $humantime [press q to stop]"
   mkdir -p "$outdir"
 
+  recording_device=/dev/video2 # whichever is the better camera
+  playback_device=/dev/video0
+  newline=$'\r'
+
   # arguments
   # -f input (audio or video)
   # -i input device
   # -r frame rate
   # -q:v video quality. (reasonable range 2-5) lower the number, the higher the quality
-  ffmpeg -loglevel error -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video2 -r 60 -q:v 2 "$mpg_file" &
-  mpv --screen=1 -fs --fs-screen=1 /dev/video0 --really-quiet
+  # -vf view filter.  adds the date onto video
+  ffmpeg -loglevel error -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 \
+    -i ${recording_device} -vf "drawtext=x=2:y=2:box=1:fontcolor=white:boxcolor=black: \
+    expansion=strftime:basetime=$(date +%s)000000: text='$newline %Y-%m-%d %a %H\\:%M\\:%S $newline'" -r 60 -q:v 2 "$mpg_file" &
+  mpv --screen=1 -fs --fs-screen=1 ${playback_device} --really-quiet
   pkill ffmpeg
 }
 
