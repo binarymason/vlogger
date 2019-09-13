@@ -50,12 +50,14 @@ record_video() {
   # -i input device
   # -r frame rate
   # -q:v video quality. (reasonable range 2-5) lower the number, the higher the quality
-  ffmpeg -loglevel error -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video0 -r 60 -q:v 2 "$mpg_file"
+  ffmpeg -loglevel error -f alsa -i plughw:CARD=Snowball,DEV=0  -f video4linux2 -i /dev/video2 -r 60 -q:v 2 "$mpg_file" &
+  mpv --screen=1 -fs --fs-screen=1 /dev/video0 --really-quiet
+  pkill ffmpeg
 }
 
 playback() {
   info "starting playback [press q to stop]"
-  ffplay -loglevel error -autoexit "$mpg_file"
+  ffplay -loglevel error -fs -autoexit "$mpg_file"
 }
 
 process() {
