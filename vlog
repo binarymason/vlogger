@@ -5,6 +5,7 @@ set -e
 epoch=$(date +"%s")
 ts=$(date +"%Y%m%d" -d "@$epoch")
 vlogdir=${HOME}/vlog
+index_file=${vlogdir}/index.txt
 outdir=${vlogdir}/${ts}
 clocktime=$(date +"%H%M" -d "@$epoch")
 humantime=$(date +"%c" -d "@$epoch")
@@ -96,6 +97,10 @@ process() {
   echo "video saved to: $mpg_file"
   echo "meta saved to: $meta_file"
   cat "$meta_file"
+
+  echo "#${video_count} ${humantime} ${emotion}" >> "$index_file"
+  echo "$index_file updated"
+
 }
 
 update_graphite() {
