@@ -94,6 +94,7 @@ process() {
     echo "---"
     echo
     echo "duration: $duration"
+    echo "video: $mpg_file"
 
     [[ ! -z "$emotion" ]] && echo "emotion: $emotion"
     echo "timestamp: $epoch"
@@ -109,7 +110,7 @@ process() {
   echo "meta saved to: $meta_file"
   cat "$meta_file"
 
-  echo "#${video_count} ${humantime} ${emotion}" >> "$index_file"
+  echo "#${video_count} ${mpg_file} ${emotion}" >> "$index_file"
   echo "$index_file updated"
 
 }
