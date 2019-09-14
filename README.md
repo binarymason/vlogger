@@ -30,5 +30,5 @@ vlog --search <your-search-term>
 ## Reviewing entries
 
 ```
-vlg --show-entries
+vlog -l
 ```
