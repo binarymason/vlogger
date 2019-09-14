@@ -24,5 +24,11 @@ Transcripts are automatically generating using Mozilla's `deepspeech` pretrained
 You can achieve a poor-man's search through your vlog entries like this:
 
 ```
-grep -Ri <your-search-term> ~/vlog
+vlog --search <your-search-term>
+```
+
+## Reviewing entries
+
+```
+vlg --show-entries
 ```

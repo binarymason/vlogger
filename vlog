@@ -16,6 +16,17 @@ audio_file=out.wav
 source_code_root=${HOME}/code/vlogger
 deepspeech_dir=${source_code_root}/models
 
+if [ "$1" = "--list" ] || [ "$1" = "-l" ]; then
+  tail -n 100 "$index_file"
+  exit
+fi
+
+if [ "$1" = "--search" ]; then
+  grep -RiI --color=always "$2" "$vlogdir"
+  exit
+fi
+
+
 info() {
   echo "+ $*"
 }
